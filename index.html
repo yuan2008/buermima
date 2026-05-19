@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="theme-color" content="#FFB7C5">
+    <title>🐱 粉嫩喵 · 每日秘语生成酱</title>
+    <!-- 引入 CryptoJS MD5 库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: linear-gradient(145deg, #ffe6f0 0%, #ffd9e6 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', 'Quicksand', system-ui, -apple-system, 'Poppins', 'Helvetica Neue', 'Noto Sans', sans-serif;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* 可爱漂浮装饰 */
+        body::before {
+            content: "🌸🐾🌸";
+            position: absolute;
+            top: 10px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 32px;
+            opacity: 0.2;
+            pointer-events: none;
+            white-space: nowrap;
+            letter-spacing: 12px;
+        }
+
+        body::after {
+            content: " (ૢ˃ꌂ˂⁎)✨💖✨";
+            position: absolute;
+            bottom: 15px;
+            right: 10px;
+            font-size: 28px;
+            opacity: 0.25;
+            pointer-events: none;
+        }
+
+        /* 主卡片 */
+        .card {
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(2px);
+            border-radius: 56px;
+            box-shadow: 0 25px 45px rgba(255, 105, 180, 0.25), 0 8px 18px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255,255,255,0.8);
+            width: 100%;
+            max-width: 480px;
+            padding: 2rem 1.8rem 2.2rem;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 220, 230, 0.7);
+        }
+
+        /* 头部区 */
+        .header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .cat-icon {
+            font-size: 58px;
+            filter: drop-shadow(2px 4px 12px rgba(255, 80, 120, 0.3));
+            animation: bounceSoft 2s infinite ease;
+            display: inline-block;
+        }
+
+        @keyframes bounceSoft {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #FF90B5, #FFB7C5, #FFA0C0);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.3px;
+            margin-top: 8px;
+            text-shadow: 0 2px 5px rgba(255, 200, 210, 0.5);
+        }
+
+        .sub {
+            font-size: 0.8rem;
+            color: #e48aaa;
+            background: #fff0f5;
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 40px;
+            margin-top: 8px;
+            font-weight: 500;
+            backdrop-filter: blur(2px);
+        }
+
+        /* 输入框组 */
+        .input-group {
+            margin-bottom: 28px;
+            position: relative;
+        }
+
+        .input-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+            color: #c96f8f;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
+        }
+
+        .input-label span {
+            font-size: 1.2rem;
+        }
+
+        .username-input {
+            width: 100%;
+            padding: 16px 20px;
+            font-size: 1.05rem;
+            border: 2px solid #ffe2ed;
+            border-radius: 60px;
+            background: #fffef7;
+            transition: all 0.25s;
+            outline: none;
+            font-weight: 500;
+            color: #7a4e60;
+            font-family: inherit;
+        }
+
+        .username-input:focus {
+            border-color: #FF9EBB;
+            box-shadow: 0 0 0 4px rgba(255, 158, 187, 0.2);
+            background: white;
+        }
+
+        /* 日期展示条 */
+        .date-badge {
+            background: #ffeef4;
+            border-radius: 100px;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+            gap: 10px;
+            border: 1px solid #ffd6e4;
+        }
+
+        .date-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1rem;
+            background: white;
+            padding: 5px 14px;
+            border-radius: 50px;
+            color: #e47a9e;
+            font-weight: 600;
+            box-shadow: inset 0 1px 2px #ffe0ea, 0 1px 2px white;
+        }
+
+        .refresh-date-btn {
+            background: #ffb7c9;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 60px;
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 4px 8px rgba(255, 100, 130, 0.2);
+        }
+
+        .refresh-date-btn:active {
+            transform: scale(0.96);
+            background: #ff9db8;
+        }
+
+        /* 密码展示区域 */
+        .password-area {
+            background: #fff9fb;
+            border-radius: 48px;
+            padding: 20px 18px;
+            margin-bottom: 28px;
+            border: 2px dashed #ffc0d0;
+            box-shadow: inset 0 1px 5px #ffe0ea, 0 5px 12px rgba(0,0,0,0.02);
+        }
+
+        .password-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 700;
+            color: #f0a1bd;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .password-value {
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 1rem;
+            word-break: break-all;
+            background: #ffffffcc;
+            padding: 14px 12px;
+            border-radius: 34px;
+            color: #bf6f8a;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            border: 1px solid #ffecf0;
+            line-height: 1.4;
+        }
+
+        .error-pwd {
+            color: #ff8aa7;
+            font-weight: 500;
+            font-family: inherit;
+        }
+
+        /* 按钮组 */
+        .button-group {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px 8px;
+            border-radius: 66px;
+            font-weight: 700;
+            font-size: 1rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: white;
+            color: #e47a9e;
+            box-shadow: 0 4px 10px rgba(255, 90, 120, 0.15);
+            border: 1px solid #ffd3e0;
+        }
+
+        .btn-primary {
+            background: linear-gradient(115deg, #FFB7C5, #FF9EBB);
+            color: white;
+            border: none;
+            box-shadow: 0 8px 18px #ffb0c470;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.97);
+            background: #ff9ab6;
+        }
+
+        .btn-outline:active {
+            transform: scale(0.97);
+            background: #ffeef4;
+        }
+
+        /* 复制成功toast */
+        .toast-msg {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) scale(0.9);
+            background: #ff90b5dd;
+            backdrop-filter: blur(12px);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 60px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.2s, transform 0.2s;
+            pointer-events: none;
+            z-index: 1000;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            white-space: nowrap;
+            font-family: monospace;
+        }
+
+        .toast-msg.show {
+            opacity: 1;
+            transform: translateX(-50%) scale(1);
+        }
+
+        /* 清除记忆小按钮 */
+        .clear-memory {
+            text-align: right;
+            margin-top: 5px;
+        }
+        .clear-btn {
+            background: none;
+            border: none;
+            color: #e9a7bd;
+            font-size: 0.7rem;
+            text-decoration: underline;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 50px;
+            transition: 0.2s;
+        }
+        .clear-btn:active {
+            color: #ff7fa3;
+        }
+        hr {
+            margin: 12px 0 0;
+            border: 0.5px solid #ffdae6;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.6rem;
+            color: #f4adc4;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                padding: 1.6rem 1.3rem;
+            }
+            .button-group {
+                gap: 12px;
+            }
+            .password-value {
+                font-size: 0.85rem;
+            }
+            .cat-icon {
+                font-size: 48px;
+            }
+            h1 {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="header">
+        <div class="cat-icon">🐱💗🌸</div>
+        <h1>不二胖喵 · 每日秘语</h1>
+        <div class="sub">✨ 只属于今天的魔法密码 ✨</div>
+    </div>
+
+    <!-- 用户名输入区 -->
+    <div class="input-group">
+        <div class="input-label">
+            <span>🐾</span> 你的专属昵称
+        </div>
+        <input type="text" id="usernameInput" class="username-input" placeholder="例如: 胖喵酱 / 小草莓" autocomplete="off">
+        <div class="clear-memory">
+            <button id="clearMemoryBtn" class="clear-btn" type="button">🧹 清除记忆用户名</button>
+        </div>
+    </div>
+
+    <!-- 日期区域 + 手动刷新功能 (确保始终最新当天) -->
+    <div class="date-badge">
+        <div class="date-info">
+            <span>📅🌸 今日密钥日期</span>
+            <strong id="todayDateDisplay">----</strong>
+        </div>
+        <button id="refreshDateBtn" class="refresh-date-btn">🔄 刷新今日密码</button>
+    </div>
+
+    <!-- 密码展示卡片 -->
+    <div class="password-area">
+        <div class="password-label">
+            <span>🔐🍰</span> 每日密码 (MD5)
+        </div>
+        <div id="passwordDisplay" class="password-value">
+            💖 输入用户名后自动生成 💖
+        </div>
+    </div>
+
+    <!-- 操作按钮组 -->
+    <div class="button-group">
+        <button id="copyBtn" class="btn btn-primary">📋 一键复制密码</button>
+        <button id="manualGenBtn" class="btn btn-outline">✨ 生成 / 同步</button>
+    </div>
+    <footer>生成密码的欧尼酱❛˓◞˂̵✧</footer>
+</div>
+
+<div id="toastMsg" class="toast-msg">🌸 已复制到剪贴板 🌸</div>
+
+<script>
+    (function() {
+        // ---------- DOM 元素 ----------
+        const usernameInput = document.getElementById('usernameInput');
+        const todayDateSpan = document.getElementById('todayDateDisplay');
+        const passwordDisplayDiv = document.getElementById('passwordDisplay');
+        const copyBtn = document.getElementById('copyBtn');
+        const refreshDateBtn = document.getElementById('refreshDateBtn');
+        const manualGenBtn = document.getElementById('manualGenBtn');
+        const clearMemoryBtn = document.getElementById('clearMemoryBtn');
+        const toastEl = document.getElementById('toastMsg');
+
+        // ---------- 工具函数 ----------
+        // 获取当前日期 YYYYMMDD (基于本地时区)
+        function getTodayDateStr() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            return `${year}${month}${day}`;
+        }
+
+        // 显示toast消息
+        function showToast(message, isError = false) {
+            toastEl.textContent = message || (isError ? '❌ 复制失败' : '🌸 已复制到剪贴板 🌸');
+            toastEl.classList.add('show');
+            // 根据风格调整背景 (错误用深一点)
+            if (isError) {
+                toastEl.style.background = "#ff99bbdd";
+            } else {
+                toastEl.style.background = "#ff90b5dd";
+            }
+            setTimeout(() => {
+                toastEl.classList.remove('show');
+            }, 1800);
+        }
+
+        // 核心: 根据用户名 & 日期生成MD5密码 (完全对齐Python规则: f"{name}-{date_str}-{name}")
+        function generateDailyPassword(username, dateStr) {
+            if (!username || username.trim() === "") {
+                return null; // 无效用户名
+            }
+            const cleanName = username.trim();
+            const rawString = `${cleanName}-${dateStr}-${cleanName}`;
+            // 使用 CryptoJS.MD5 加密并返回32位小写hex
+            const md5Hash = CryptoJS.MD5(rawString).toString();
+            return md5Hash;
+        }
+
+        // 更新界面: 显示当前日期、根据用户名生成密码、记忆用户名
+        // 参数: updateStorageFlag 是否将当前用户名存入localStorage (默认true)
+        function refreshAll(updateStorageFlag = true) {
+            // 1. 获取最新今日日期字符串
+            const todayDate = getTodayDateStr();
+            todayDateSpan.innerText = todayDate;
+
+            // 2. 获取当前输入框用户名(trim前后空格)
+            let rawUsername = usernameInput.value;
+            let finalUsername = rawUsername ? rawUsername.trim() : "";
+
+            // 处理用户名为空的情况
+            if (finalUsername === "") {
+                passwordDisplayDiv.innerHTML = '🐣 喵~ 先输入可爱的用户名吧 🐣';
+                passwordDisplayDiv.classList.add('error-pwd');
+                // 清除密码区域的有效标记(方便复制时检查)
+                passwordDisplayDiv.setAttribute('data-valid-pwd', 'false');
+                passwordDisplayDiv.setAttribute('data-pwd-value', '');
+                return;
+            }
+
+            // 有效用户名 -> 生成密码
+            const generatedPwd = generateDailyPassword(finalUsername, todayDate);
+            if (generatedPwd) {
+                passwordDisplayDiv.innerHTML = generatedPwd;
+                passwordDisplayDiv.classList.remove('error-pwd');
+                // 存储当前有效密码原文和有效标记 (用于复制)
+                passwordDisplayDiv.setAttribute('data-valid-pwd', 'true');
+                passwordDisplayDiv.setAttribute('data-pwd-value', generatedPwd);
+            } else {
+                // 理论上不会到这里, 但保险
+                passwordDisplayDiv.innerHTML = '❓ 密码生成失败';
+                passwordDisplayDiv.setAttribute('data-valid-pwd', 'false');
+                passwordDisplayDiv.setAttribute('data-pwd-value', '');
+            }
+
+            // 3. 保存用户名到 localStorage (仅当有有效用户名时, 并且更新标志开启)
+            if (updateStorageFlag && finalUsername !== "") {
+                localStorage.setItem('daily_pwd_username', finalUsername);
+            } else if (updateStorageFlag && finalUsername === "") {
+                // 如果用户清空了, 我们也可以选择性删除记忆? 保持删除逻辑由清除按钮负责，这里不清除记忆，但是为了体验，如果为空就不覆盖记忆了
+                // 但防止下次加载时空覆盖，不做操作，不清除原有记录，不清除。
+            }
+        }
+
+        // 手动强制同步（基于当前用户名和当天日期重新生成并保存记忆）
+        function forceRegenerateAndSave() {
+            const todayDate = getTodayDateStr();
+            todayDateSpan.innerText = todayDate;   // 刷新日期显示
+            let rawUsername = usernameInput.value;
+            let finalUsername = rawUsername ? rawUsername.trim() : "";
+
+            if (finalUsername === "") {
+                passwordDisplayDiv.innerHTML = '🐣 喵~ 先输入可爱的用户名吧 🐣';
+                passwordDisplayDiv.classList.add('error-pwd');
+                passwordDisplayDiv.setAttribute('data-valid-pwd', 'false');
+                passwordDisplayDiv.setAttribute('data-pwd-value', '');
+                // 注意：不清除原来存储的用户名，因为用户可能暂时清空
+                return;
+            }
+
+            const newPwd = generateDailyPassword(finalUsername, todayDate);
+            if (newPwd) {
+                passwordDisplayDiv.innerHTML = newPwd;
+                passwordDisplayDiv.classList.remove('error-pwd');
+                passwordDisplayDiv.setAttribute('data-valid-pwd', 'true');
+                passwordDisplayDiv.setAttribute('data-pwd-value', newPwd);
+                // 同步保存用户名到localStorage (因为有效)
+                localStorage.setItem('daily_pwd_username', finalUsername);
+                // 确保输入框显示trim后，若包含首尾空格但用户未感知，可以在UI显示trim后值但保留输入原有值? 更好体验: 将输入框的值设为trimmed? 为了避免歧义，只保存trim后，但输入框显示用户输入的原样，但生成时按trim。比较合理
+                // 但强烈建议: 如果用户输入前后空格，可以在失焦时trim一下显示？但为了不强行改变用户习惯，我们只展示trim值？不修改输入框显示内容，只在生成时做trim。
+                // 可选: 显示密码时候ok。 
+            } else {
+                passwordDisplayDiv.innerHTML = '❌ 生成失败，请重试';
+                passwordDisplayDiv.setAttribute('data-valid-pwd', 'false');
+                passwordDisplayDiv.setAttribute('data-pwd-value', '');
+            }
+        }
+
+        // 复制功能: 从当前密码区域获取真实有效密码 (data-pwd-value)
+        function copyCurrentPassword() {
+            const isValid = passwordDisplayDiv.getAttribute('data-valid-pwd') === 'true';
+            const currentPwd = passwordDisplayDiv.getAttribute('data-pwd-value');
+            if (!isValid || !currentPwd || currentPwd === "") {
+                showToast('💔 还没有有效密码，请先输入昵称～', true);
+                return;
+            }
+            // 使用剪贴板API
+            navigator.clipboard.writeText(currentPwd).then(() => {
+                showToast('🐱 密码已复制！ 喵～', false);
+                // 添加一点微小的成功动画反馈
+                const copyBtnEl = document.getElementById('copyBtn');
+                copyBtnEl.style.transform = 'scale(0.97)';
+                setTimeout(() => { copyBtnEl.style.transform = ''; }, 150);
+            }).catch(err => {
+                console.error('复制失败', err);
+                showToast('❌ 复制失败，可手动选择密码', true);
+            });
+        }
+
+        // 处理用户名输入变化 (自动生成、自动记忆)
+        let debounceTimer;
+        function onUsernameInput() {
+            // 防抖优化体验
+            if (debounceTimer) clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                // 获取当前用户名，如果有效则刷新并存储；若无效只清空密码区域但不破坏原存储？
+                const val = usernameInput.value;
+                const trimmed = val ? val.trim() : "";
+                if (trimmed === "") {
+                    // 用户清空了输入框 -> 显示空密码提示, 不清除本地存储的用户名（下次加载可恢复）
+                    const todayDate = getTodayDateStr();
+                    todayDateSpan.innerText = todayDate;
+                    passwordDisplayDiv.innerHTML = '🐣 喵~ 先输入可爱的用户名吧 🐣';
+                    passwordDisplayDiv.classList.add('error-pwd');
+                    passwordDisplayDiv.setAttribute('data-valid-pwd', 'false');
+                    passwordDisplayDiv.setAttribute('data-pwd-value', '');
+                    // 不更新localStorage（不清除旧记忆），但为了避免下次加载为空，不清除
+                    // 但是用户已经清空了，记忆依然存在，等下次输入相同名字可继续，不额外操作
+                } else {
+                    // 有效用户名，全面刷新并且同步存储 (updateStorageFlag = true)
+                    refreshAll(true);
+                }
+            }, 50);
+        }
+
+        // 清除用户名记忆功能（清除localStorage中的用户名，并清空输入框，重置密码界面）
+        function clearUsernameMemory() {
+            localStorage.removeItem('daily_pwd_username');
+            usernameInput.value = '';
+            // 清空密码显示区状态，没有用户名
+            const todayDate = getTodayDateStr();
+            todayDateSpan.innerText = todayDate;
+            passwordDisplayDiv.innerHTML = '🌸 记忆已清除 · 输入新名字吧 🌸';
+            passwordDisplayDiv.classList.add('error-pwd');
+            passwordDisplayDiv.setAttribute('data-valid-pwd', 'false');
+            passwordDisplayDiv.setAttribute('data-pwd-value', '');
+            // 同时清除关联的存储标记保留一致
+            showToast('🧹 用户名记忆已清除', false);
+        }
+
+        // 初始化: 加载记住的用户名、刷新当天日期、生成密码
+        function init() {
+            // 从 localStorage 获取记忆用户名
+            const savedUsername = localStorage.getItem('daily_pwd_username');
+            if (savedUsername && savedUsername.trim() !== "") {
+                usernameInput.value = savedUsername;
+                // 根据记忆的用户名刷新所有内容，并保存存储状态（不重复覆盖也一样）
+                refreshAll(true);   // 这里会根据当前日期+记忆用户名生成密码，且再次存储用户名(一样值)
+            } else {
+                // 无记忆用户名，仅展示日期，密码区提示
+                const todayDate = getTodayDateStr();
+                todayDateSpan.innerText = todayDate;
+                passwordDisplayDiv.innerHTML = '💕 输入你的名字，生成今日密码 💕';
+                passwordDisplayDiv.classList.add('error-pwd');
+                passwordDisplayDiv.setAttribute('data-valid-pwd', 'false');
+                passwordDisplayDiv.setAttribute('data-pwd-value', '');
+                usernameInput.value = '';   // 确保空白
+            }
+            // 额外监听输入框变化
+            usernameInput.addEventListener('input', onUsernameInput);
+            copyBtn.addEventListener('click', copyCurrentPassword);
+            // 刷新按钮：仅刷新基于当前用户名和最新日期的密码，并重新保存用户名（如果有效）
+            refreshDateBtn.addEventListener('click', () => {
+                forceRegenerateAndSave();
+                showToast('✨ 已刷新为最新日期密码 ✨', false);
+            });
+            // 手动生成/同步按钮: 功能与刷新基本相同, 但为了明确，再次强制刷新
+            manualGenBtn.addEventListener('click', () => {
+                forceRegenerateAndSave();
+                showToast('🐾 已同步最新密码～', false);
+            });
+            // 清除记忆按钮
+            clearMemoryBtn.addEventListener('click', clearUsernameMemory);
+        }
+
+        // 为了防止跨天停留在页面时，明天用户能看到昨天的密码？但提供了刷新按钮并始终基于最新日期生成提示
+        // 为了更友好，每次页面可视区域重新获得焦点(切换到app回来时) 可以自动基于当前日期刷新密码，保证日期一致性
+        // 添加窗口焦点事件自动刷新 (可选, 增强用户体验)
+        window.addEventListener('focus', () => {
+            // 重新获取日期, 如果日期变化且用户名有效，再刷新; 这样用户切回页面自动更新
+            const currentDisplayDate = todayDateSpan.innerText;
+            const realToday = getTodayDateStr();
+            if (currentDisplayDate !== realToday) {
+                // 日期已经改变，自动重新生成（确保密码基于今天）
+                forceRegenerateAndSave();
+                // 不打扰toast太频繁，静默更新, 但可以给微提醒
+                showToast('📅 新的一天！密码已自动更新', false);
+            } else {
+                // 日期没变，但可能其他原因丢失密码？确保有效用户名有密码显示
+                const isValidFlag = passwordDisplayDiv.getAttribute('data-valid-pwd') === 'true';
+                const usernameNow = usernameInput.value.trim();
+                if (usernameNow !== "" && !isValidFlag) {
+                    forceRegenerateAndSave();
+                }
+            }
+        });
+
+        // 保证页面完全加载后触发
+        window.addEventListener('DOMContentLoaded', init);
+    })();
+</script>
+</body>
+</html>
