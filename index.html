@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <meta name="theme-color" content="#FFB7C5">
-    <title>🐱 超肉麻喵 · 每日密码生成器</title>
+    <meta name="theme-color" content="#1a0c2e">
+    <title>老牟深算 · 天命秘钥生成器</title>
     <!-- 引入 CryptoJS MD5 库 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <style>
@@ -17,315 +16,320 @@
         }
 
         body {
-            background: linear-gradient(145deg, #ffe6f0 0%, #ffd9e6 100%);
+            background: radial-gradient(ellipse at 20% 30%, #0f0719, #02010a);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Segoe UI', 'Quicksand', system-ui, -apple-system, 'Poppins', 'Helvetica Neue', 'Noto Sans', sans-serif;
+            font-family: 'Cinema', 'Segoe UI', 'Quicksand', 'Noto Serif SC', system-ui, -apple-system, 'Poppins', serif;
             padding: 20px;
             position: relative;
+            overflow-x: hidden;
         }
 
-        /* 可爱漂浮装饰 */
-        body::before {
-            content: "🌸🐾🌸";
-            position: absolute;
-            top: 10px;
+        /* 星辰粒子背景 */
+        .star-field {
+            position: fixed;
+            top: 0;
             left: 0;
             width: 100%;
-            text-align: center;
-            font-size: 32px;
-            opacity: 0.2;
+            height: 100%;
             pointer-events: none;
-            white-space: nowrap;
-            letter-spacing: 12px;
+            z-index: 0;
         }
-
-        body::after {
-            content: "✨💖✨";
+        .star {
             position: absolute;
-            bottom: 15px;
-            right: 10px;
-            font-size: 28px;
-            opacity: 0.25;
-            pointer-events: none;
+            background-color: #ffe4b5;
+            border-radius: 50%;
+            opacity: 0.7;
+            animation: twinkle 3s infinite alternate;
+            box-shadow: 0 0 6px #ffd966;
+        }
+        @keyframes twinkle {
+            0% { opacity: 0.2; transform: scale(1);}
+            100% { opacity: 1; transform: scale(1.2);}
         }
 
-        /* 主卡片 */
+        /* 旋转八卦阵画布 (灵气流转) */
+        .bagua-canvas {
+            position: fixed;
+            bottom: 5%;
+            right: -5%;
+            width: 320px;
+            height: 320px;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.65;
+            filter: drop-shadow(0 0 12px #ffb86b);
+            animation: levitate 8s infinite ease-in-out;
+        }
+        @keyframes levitate {
+            0% { transform: translateY(0px) rotate(0deg);}
+            50% { transform: translateY(-15px) rotate(3deg);}
+            100% { transform: translateY(0px) rotate(0deg);}
+        }
+        @media (max-width: 600px) {
+            .bagua-canvas { width: 220px; height: 220px; bottom: 2%; right: -10%; opacity: 0.5; }
+        }
+
+        /* 主卡片 — 灵台仙阁 */
         .card {
-            background-color: rgba(255, 255, 255, 0.96);
-            backdrop-filter: blur(2px);
-            border-radius: 56px;
-            box-shadow: 0 25px 45px rgba(255, 105, 180, 0.25), 0 8px 18px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255,255,255,0.8);
+            background: rgba(12, 6, 25, 0.75);
+            backdrop-filter: blur(12px);
+            border-radius: 64px;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 200, 100, 0.3), inset 0 1px 0 rgba(255, 215, 150, 0.2);
             width: 100%;
-            max-width: 520px;
+            max-width: 540px;
             padding: 2rem 1.8rem 2.2rem;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 220, 230, 0.7);
+            transition: all 0.4s ease;
+            border: 1px solid rgba(255, 190, 80, 0.5);
             position: relative;
-            z-index: 2;
+            z-index: 10;
             opacity: 0;
-            transform: scale(0.98);
-            transition: opacity 0.5s ease, transform 0.4s ease;
+            transform: scale(0.96) translateY(10px);
+            transition: opacity 0.6s cubic-bezier(0.2, 0.9, 0.4, 1.1), transform 0.5s ease;
             pointer-events: none;
         }
         .card.active {
             opacity: 1;
-            transform: scale(1);
+            transform: scale(1) translateY(0);
             pointer-events: auto;
         }
 
-        /* 头部区 */
+        /* 算命风格头部 */
         .header {
             text-align: center;
             margin-bottom: 28px;
         }
-
-        .cat-icon {
-            font-size: 58px;
-            filter: drop-shadow(2px 4px 12px rgba(255, 80, 120, 0.3));
-            animation: bounceSoft 2s infinite ease;
+        .divine-icon {
+            font-size: 54px;
+            filter: drop-shadow(0 0 8px #ffb347);
+            animation: floatChi 3s infinite alternate;
             display: inline-block;
         }
-
-        @keyframes bounceSoft {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
+        @keyframes floatChi {
+            0% { transform: translateY(0px); text-shadow: 0 0 2px gold; }
+            100% { transform: translateY(-6px); text-shadow: 0 0 12px #ffaa44; }
         }
-
         h1 {
-            font-size: 1.9rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #FF90B5, #FFB7C5, #FFA0C0);
+            font-size: 2.1rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #F9E0A0, #F3B33D, #E8A735);
             background-clip: text;
             -webkit-background-clip: text;
             color: transparent;
-            letter-spacing: -0.3px;
+            letter-spacing: 4px;
             margin-top: 8px;
-            text-shadow: 0 2px 5px rgba(255, 200, 210, 0.5);
+            text-shadow: 0 0 8px rgba(255,180,40,0.6);
+            font-family: 'Noto Serif SC', serif;
         }
-
         .sub {
-            font-size: 0.8rem;
-            color: #e48aaa;
-            background: #fff0f5;
+            font-size: 0.7rem;
+            color: #e5c68b;
+            background: rgba(0,0,0,0.5);
             display: inline-block;
-            padding: 4px 14px;
-            border-radius: 40px;
-            margin-top: 8px;
-            font-weight: 500;
+            padding: 4px 18px;
+            border-radius: 60px;
+            margin-top: 10px;
+            letter-spacing: 2px;
+            backdrop-filter: blur(4px);
+            border: 0.5px solid #ffd966;
         }
 
-        /* 输入框组 */
+        /* 灵签输入区 */
         .input-group {
             margin-bottom: 28px;
-            position: relative;
         }
-
         .input-label {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
             font-weight: 600;
-            color: #c96f8f;
+            color: #f7da9b;
             margin-bottom: 8px;
             font-size: 0.95rem;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
         }
         .clear-memory {
             text-align: right;
-            margin-top: 8px;
+            margin-top: 10px;
         }
-        
         .clear-btn {
-            background: #ffe0eb;
-            border: none;
-            padding: 8px 16px;
+            background: #231b38;
+            border: 1px solid #f3b33d;
+            padding: 6px 16px;
             border-radius: 40px;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 600;
-            color: #e47a9e;
+            color: #f7da9b;
             cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 2px 6px rgba(255, 100, 130, 0.15);
+            transition: 0.2s;
             backdrop-filter: blur(2px);
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
         }
-        
         .clear-btn:active {
             transform: scale(0.96);
-            background: #ffd0de;
-            color: #c95f83;
+            background: #2e234b;
         }
         .username-input {
             width: 100%;
             padding: 16px 20px;
-            font-size: 1.05rem;
-            border: 2px solid #ffe2ed;
+            font-size: 1rem;
+            border: 1.5px solid #f3b33d66;
             border-radius: 60px;
-            background: #fffef7;
+            background: #110c1c;
             transition: all 0.25s;
             outline: none;
             font-weight: 500;
-            color: #7a4e60;
+            color: #f7e3b5;
             font-family: inherit;
+            letter-spacing: 1px;
+            box-shadow: inset 0 0 8px rgba(0,0,0,0.5), 0 1px 0 rgba(255,215,0,0.2);
         }
-        
         .username-input:focus {
-            border-color: #FF9EBB;
-            box-shadow: 0 0 0 4px rgba(255, 158, 187, 0.2);
-            background: white;
+            border-color: #ffbb4c;
+            box-shadow: 0 0 0 4px rgba(243, 179, 61, 0.3), inset 0 0 6px gold;
+            background: #19112b;
         }
-        
-        /* 日期展示条 */
+
+        /* 天机日期 */
         .date-badge {
-            background: #ffeef4;
-            border-radius: 100px;
-            padding: 10px 16px;
+            background: rgba(0, 0, 0, 0.45);
+            border-radius: 80px;
+            padding: 8px 18px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             margin-bottom: 28px;
             flex-wrap: wrap;
-            gap: 10px;
-            border: 1px solid #ffd6e4;
+            gap: 12px;
+            border: 1px solid #eeb76b;
+            backdrop-filter: blur(4px);
         }
-        
         .date-info {
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 1rem;
-            background: white;
-            padding: 5px 14px;
-            border-radius: 50px;
-            color: #e47a9e;
-            font-weight: 600;
-            box-shadow: inset 0 1px 2px #ffe0ea, 0 1px 2px white;
-        }
-        
-        .refresh-date-btn {
-            background: #ffb7c9;
-            border: none;
-            padding: 8px 18px;
+            font-size: 0.9rem;
+            background: #0c0820cc;
+            padding: 5px 16px;
             border-radius: 60px;
-            color: white;
-            font-size: 0.8rem;
+            color: #ffde9c;
             font-weight: 600;
+        }
+        .refresh-date-btn {
+            background: #352853;
+            border: none;
+            padding: 6px 20px;
+            border-radius: 60px;
+            color: #ffdb8a;
+            font-size: 0.75rem;
+            font-weight: bold;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             cursor: pointer;
             transition: 0.2s;
-            box-shadow: 0 4px 8px rgba(255, 100, 130, 0.2);
+            box-shadow: 0 0 5px #ffbb4c;
         }
-        
-        /* 密码区域 */
+
+        /* 秘法灵符区域 */
         .password-area {
-            background: #fff9fb;
+            background: rgba(0, 0, 0, 0.5);
             border-radius: 48px;
             padding: 20px 18px;
             margin-bottom: 28px;
-            border: 2px dashed #ffc0d0;
-            box-shadow: inset 0 1px 5px #ffe0ea, 0 5px 12px rgba(0,0,0,0.02);
+            border: 1px solid #ffbe6e;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.4), 0 6px 12px rgba(0,0,0,0.3);
         }
-        
         .password-label {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
+            font-size: 0.7rem;
+            letter-spacing: 3px;
             font-weight: 700;
-            color: #f0a1bd;
+            color: #f5c27b;
             margin-bottom: 12px;
             display: flex;
-            align-items: center;
-            gap: 5px;
+            gap: 8px;
         }
-        
         .password-value {
-            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-family: 'Fira Code', 'Courier New', monospace;
             font-size: 1rem;
             word-break: break-all;
-            background: #ffffffcc;
+            background: #070412b3;
             padding: 14px 12px;
-            border-radius: 34px;
-            color: #bf6f8a;
+            border-radius: 32px;
+            color: #ffdfa5;
             font-weight: 500;
-            letter-spacing: 0.3px;
-            border: 1px solid #ffecf0;
+            border: 1px solid #e7a947;
             line-height: 1.4;
+            text-shadow: 0 0 2px #ffbb66;
         }
-        
-        .error-pwd {
-            color: #ff8aa7;
-            font-family: inherit;
-        }
-        
-        /* 按钮组 */
+
+        /* 按钮组 - 道纹 */
         .button-group {
             display: flex;
             gap: 16px;
             margin-bottom: 20px;
             flex-wrap: wrap;
         }
-        
         .btn {
             flex: 1;
-            padding: 14px 8px;
-            border-radius: 66px;
+            padding: 12px 8px;
+            border-radius: 80px;
             font-weight: 700;
-            font-size: 1rem;
+            font-size: 0.9rem;
             border: none;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: 0.15s;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
-            background: white;
-            color: #e47a9e;
-            box-shadow: 0 4px 10px rgba(255, 90, 120, 0.15);
-            border: 1px solid #ffd3e0;
+            background: #1f1736;
+            color: #ffda99;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+            border: 1px solid #ffb95e;
         }
-        
         .btn-primary {
-            background: linear-gradient(115deg, #FFB7C5, #FF9EBB);
-            color: white;
+            background: linear-gradient(115deg, #c47d2e, #a45c1a);
+            color: #110d1a;
             border: none;
-            box-shadow: 0 8px 18px #ffb0c470;
+            font-weight: 800;
+            text-shadow: 0 1px 1px #ffda88;
         }
-        
-        /* 点击动画 (弹跳+微光) */
         .btn-clicked {
             transform: scale(0.94) !important;
             transition: transform 0.08s cubic-bezier(0.2, 1.6, 0.4, 1);
-            filter: brightness(1.05);
+            filter: brightness(1.2);
         }
-        
-        /* 飘浮爱心动画容器 */
-        .floating-heart {
+        footer {
+            text-align: center;
+            font-size: 0.6rem;
+            color: #bb9a6b;
+            margin-top: 15px;
+            letter-spacing: 1px;
+        }
+
+        /* 灵气飘浮特效 (符咒/星屑) */
+        .floating-spirit {
             position: fixed;
             pointer-events: none;
             z-index: 9999;
-            font-size: 28px;
-            animation: floatUp 1s ease-out forwards;
+            font-size: 24px;
+            animation: floatUpSpirit 1.2s ease-out forwards;
+            filter: drop-shadow(0 0 4px gold);
         }
-        
-        @keyframes floatUp {
+        @keyframes floatUpSpirit {
             0% {
-                transform: translateY(0) scale(0.6);
-                opacity: 1;
+                transform: translateY(0) scale(0.3) rotate(0deg);
+                opacity: 0.9;
             }
             100% {
-                transform: translateY(-120px) scale(1.2);
+                transform: translateY(-130px) scale(1.1) rotate(15deg);
                 opacity: 0;
             }
         }
-        
-        /* 自定义弹窗 (白名单消息专用) */
+
+        /* 天机符箓弹窗 */
         .custom-modal {
             position: fixed;
             top: 0;
@@ -338,7 +342,7 @@
             z-index: 10000;
             visibility: hidden;
             opacity: 0;
-            transition: all 0.2s ease;
+            transition: 0.2s;
         }
         .custom-modal.show {
             visibility: visible;
@@ -348,560 +352,564 @@
             position: absolute;
             width: 100%;
             height: 100%;
-            background: rgba(255, 180, 190, 0.4);
-            backdrop-filter: blur(4px);
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
         }
         .modal-content {
             position: relative;
-            background: #fffafc;
-            max-width: 280px;
+            background: #19112be6;
+            max-width: 300px;
             width: 80%;
             padding: 28px 20px 24px;
             border-radius: 68px;
             text-align: center;
-            box-shadow: 0 20px 35px rgba(255, 80, 120, 0.3);
-            border: 2px solid #ffbfcf;
-            animation: modalPop 0.25s ease-out;
+            box-shadow: 0 0 30px #ffb347, inset 0 0 8px rgba(255,200,100,0.5);
+            border: 2px solid #e0a62e;
+            animation: modalPop 0.3s ease-out;
         }
         @keyframes modalPop {
-            from { transform: scale(0.8); opacity: 0; }
+            from { transform: scale(0.7); opacity: 0; }
             to { transform: scale(1); opacity: 1; }
         }
         .modal-emoji {
             font-size: 48px;
-            margin-bottom: 12px;
+            filter: drop-shadow(0 0 4px gold);
         }
         .modal-message {
-            color: #c2698a;
+            color: #ffdfb0;
             font-weight: 600;
-            font-size: 1.2rem;
-            margin: 12px 0 16px;
-            word-break: break-word;
+            font-size: 1.1rem;
+            margin: 12px 0;
             line-height: 1.4;
         }
         .modal-close {
-            background: #ffb7c9;
+            background: #b5712c;
             border: none;
             padding: 8px 24px;
             border-radius: 50px;
-            color: white;
+            color: #1f142a;
             font-weight: bold;
-            font-size: 0.9rem;
             cursor: pointer;
-            margin-top: 8px;
-            transition: 0.1s;
-        }
-        .modal-close:active {
-            transform: scale(0.96);
-        }
-        
-        footer {
-            text-align: center;
-            font-size: 0.6rem;
-            color: #f4adc4;
-            margin-top: 20px;
         }
 
-        /* ----------------- 超肉麻人机验证弹窗 ----------------- */
+        /* 人机验证 - 仙缘试炼 */
         .verify-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(255, 210, 225, 0.92);
-            backdrop-filter: blur(12px);
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
             z-index: 20000;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.4s cubic-bezier(0.34, 1.2, 0.64, 1);
+            transition: 0.4s;
         }
         .verify-card {
-            background: #fff9fc;
-            border-radius: 88px;
-            max-width: 320px;
+            background: #110d20e6;
+            border-radius: 84px;
+            max-width: 340px;
             width: 85%;
             padding: 2rem 1.5rem;
             text-align: center;
-            box-shadow: 0 30px 40px rgba(255, 80, 120, 0.3);
-            border: 3px solid #ffc0d0;
+            box-shadow: 0 0 40px rgba(255, 180, 60, 0.6);
+            border: 2px solid #f4bc5d;
             animation: bounceIn 0.5s ease;
         }
         @keyframes bounceIn {
             0% { transform: scale(0.7); opacity: 0; }
-            80% { transform: scale(1.05); }
+            80% { transform: scale(1.02); }
             100% { transform: scale(1); opacity: 1; }
         }
         .verify-emoji {
-            font-size: 70px;
-            margin-bottom: 16px;
-            filter: drop-shadow(2px 4px 12px #ffb0c0);
-            animation: heartbeat 1.2s infinite ease;
+            font-size: 68px;
+            filter: drop-shadow(0 0 12px #f3b33d);
+            animation: pulseGlow 1.5s infinite;
         }
-        @keyframes heartbeat {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+        @keyframes pulseGlow {
+            0% { text-shadow: 0 0 0px gold; }
+            100% { text-shadow: 0 0 20px #ff9900; }
         }
         .verify-title {
-            font-size: 1.8rem;
+            font-size: 1.7rem;
             font-weight: 800;
-            background: linear-gradient(135deg, #FF90B5, #FFB0C5);
+            background: linear-gradient(135deg, #F3B86C, #D98C2B);
             background-clip: text;
             -webkit-background-clip: text;
             color: transparent;
-            margin-bottom: 12px;
         }
         .verify-desc {
-            color: #d sixteen;
-            font-size: 0.9rem;
-            background: #ffeef4;
-            padding: 8px 12px;
+            color: #ffda9c;
+            font-size: 0.85rem;
+            background: #2e233f;
+            padding: 6px 12px;
             border-radius: 60px;
             display: inline-block;
-            margin-bottom: 20px;
-            font-weight: 500;
+            margin: 12px 0;
         }
-        .paw-area {
-            background: #fff0f5;
+        .divine-trigger-area {
+            background: #1b132f;
             border-radius: 80px;
-            padding: 20px;
-            margin: 10px 0;
+            padding: 18px;
+            margin: 15px 0;
             cursor: pointer;
             transition: 0.1s;
-            user-select: none;
+            border: 1px solid #e6b151;
         }
-        .paw-area:active {
+        .divine-trigger-area:active {
             transform: scale(0.97);
-            background: #ffe4ed;
+            background: #2a1d46;
         }
         .paw-emoji {
             font-size: 56px;
-            filter: drop-shadow(0 4px 8px #ffafc0);
         }
         .click-counter {
-            font-size: 1.1rem;
-            margin-top: 12px;
-            color: #e47a9e;
+            font-size: 1rem;
+            margin-top: 10px;
+            color: #ffcd85;
             font-weight: 700;
-            letter-spacing: 2px;
         }
         .verify-tip {
-            font-size: 0.75rem;
-            color: #f0a1bd;
-            margin-top: 16px;
+            font-size: 0.7rem;
+            color: #f3b86c;
+            margin-top: 12px;
         }
         .verify-success {
-            background: #ffd9e6;
+            background: #362952;
+            border-radius: 40px;
+            padding: 8px;
+            margin-top: 10px;
+            color: #ffeaaf;
+            display: none;
+        }
+        .toast-msg {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1d112dcc;
+            backdrop-filter: blur(12px);
+            color: #ffe1a0;
+            padding: 10px 24px;
             border-radius: 60px;
-            padding: 12px;
-            margin-top: 12px;
-            color: #bf6f8a;
-            font-weight: bold;
-            display: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+            z-index: 10001;
+            white-space: nowrap;
+            border: 1px solid #ffb347;
         }
-        .hidden {
-            display: none;
-        }
-
-        @media (max-width: 480px) {
-            .card { padding: 1.6rem 1.3rem; }
-            .password-value { font-size: 0.85rem; }
-            .cat-icon { font-size: 48px; }
-            h1 { font-size: 1.6rem; }
-            .verify-card { padding: 1.5rem 1.2rem; }
+        @media (max-width: 500px) {
+            .card { padding: 1.5rem 1.2rem; }
+            .password-value { font-size: 0.8rem; }
+            .toast-msg { white-space: normal; width: 80%; text-align: center; }
         }
     </style>
 </head>
-
 <body>
-    <!-- 主应用卡片（初始隐藏，验证后才显示） -->
-    <div class="card" id="mainCard">
-        <div class="header">
-            <div class="cat-icon">🐱💗🌸</div>
-            <h1>不二胖喵 · 每日秘语</h1>
-            <div class="sub">✨ 只属于今天的魔法密码 ✨</div>
-        </div>
+<div class="star-field" id="starField"></div>
+<canvas id="baguaCanvas" class="bagua-canvas" width="400" height="400"></canvas>
 
-        <div class="input-group">
-            <div class="input-label"><span>🐾</span> 你的专属昵称</div>
-            <input type="text" id="usernameInput" class="username-input" placeholder="例如: 小草莓 / 胖喵酱" autocomplete="off">
-            <div class="clear-memory">
-                <button id="clearMemoryBtn" class="clear-btn" type="button">🧹 清除记忆用户名</button>
-            </div>
-        </div>
-
-        <div class="date-badge">
-            <div class="date-info"><span>📅🌸</span> 今日密钥日期 <strong id="todayDateDisplay">----</strong></div>
-            <button id="refreshDateBtn" class="refresh-date-btn">🔄 刷新今日密码</button>
-        </div>
-
-        <div class="password-area">
-            <div class="password-label"><span>🔐🍰</span> 每日密码 (MD5)</div>
-            <div id="passwordDisplay" class="password-value">💖 输入用户名后自动生成 💖</div>
-        </div>
-
-        <div class="button-group">
-            <button id="copyBtn" class="btn btn-primary">📋 一键复制密码</button>
-            <button id="manualGenBtn" class="btn btn-outline">✨ 生成 / 同步</button>
-        </div>
-        <footer>🐈 每天密码都会不同 · 每点一下都会飞出小爱心哟 💕</footer>
+<div class="card" id="mainCard">
+    <div class="header">
+        <div class="divine-icon">☯️🔮🐉</div>
+        <h1>老牟深算</h1>
+        <div class="sub">✦ 天机演命·每日秘钥 ✦</div>
     </div>
-
-    <!-- 白名单自定义弹窗 -->
-    <div id="whitelistModal" class="custom-modal">
-        <div class="modal-overlay"></div>
-        <div class="modal-content">
-            <div class="modal-emoji">🎀✨</div>
-            <div class="modal-message" id="modalMessageText">专属小惊喜</div>
-            <button class="modal-close" id="modalCloseBtn">💖 知道啦 💖</button>
+    <div class="input-group">
+        <div class="input-label"><span>🏮</span> 道号 / 灵名</div>
+        <input type="text" id="usernameInput" class="username-input" placeholder="例：太虚子 / 清璇真人" autocomplete="off">
+        <div class="clear-memory">
+            <button id="clearMemoryBtn" class="clear-btn" type="button">🧹 消业除忆</button>
         </div>
     </div>
-
-    <!-- toast 提示 -->
-    <div id="toastMsg" class="toast-msg" style="position:fixed; bottom:30px; left:50%; transform:translateX(-50%); background:#ff90b5dd; backdrop-filter:blur(12px); color:white; padding:12px 24px; border-radius:60px; font-size:0.9rem; font-weight:600; opacity:0; transition:opacity 0.2s; pointer-events:none; z-index:10001; white-space:nowrap;">🌸 已复制</div>
-
-    <!-- 超肉麻人机验证层 (启动即显示) -->
-    <div id="verifyOverlay" class="verify-overlay">
-        <div class="verify-card">
-            <div class="verify-emoji">🐱💕</div>
-            <div class="verify-title">诶嘿～ 小可爱</div>
-            <div class="verify-desc">💗 请证明你不是机器人，而是一只软乎乎的喵咪 💗</div>
-            <div id="pawClickZone" class="paw-area">
-                <div class="paw-emoji">🐾🌸🐾</div>
-                <div class="click-counter" id="clickCounterMsg">戳我3下 ʚɞ</div>
-            </div>
-            <div class="verify-tip">💖 轻轻按按肉球，按满3次就能进入魔法世界 💖</div>
-            <div id="verifySuccessMsg" class="verify-success">✨ 认证成功！ 宝贝请进 ✨</div>
-        </div>
+    <div class="date-badge">
+        <div class="date-info"><span>📜✨</span> 历法玄机 · <strong id="todayDateDisplay">----</strong></div>
+        <button id="refreshDateBtn" class="refresh-date-btn">🔄 重演天机</button>
     </div>
+    <div class="password-area">
+        <div class="password-label"><span>⚡️☯️</span> 天命灵符 (MD5)</div>
+        <div id="passwordDisplay" class="password-value">🌙 注入灵名后显现秘钥 🌙</div>
+    </div>
+    <div class="button-group">
+        <button id="copyBtn" class="btn btn-primary">📿 拓印灵符</button>
+        <button id="manualGenBtn" class="btn">✨ 推演 / 同步</button>
+    </div>
+    <footer>🐉 每日一签，乾坤挪移 · 点击皆蕴灵气 🪷</footer>
+</div>
 
-    <script>
-        (function() {
-            // ---------- DOM 元素 ----------
-            const mainCard = document.getElementById('mainCard');
-            const verifyOverlay = document.getElementById('verifyOverlay');
-            const pawZone = document.getElementById('pawClickZone');
-            const clickCounterMsg = document.getElementById('clickCounterMsg');
-            const verifySuccessMsgDiv = document.getElementById('verifySuccessMsg');
-            
-            const usernameInput = document.getElementById('usernameInput');
-            const todayDateSpan = document.getElementById('todayDateDisplay');
-            const passwordDisplayDiv = document.getElementById('passwordDisplay');
-            const copyBtn = document.getElementById('copyBtn');
-            const refreshDateBtn = document.getElementById('refreshDateBtn');
-            const manualGenBtn = document.getElementById('manualGenBtn');
-            const clearMemoryBtn = document.getElementById('clearMemoryBtn');
-            const toastEl = document.getElementById('toastMsg');
-            const whitelistModal = document.getElementById('whitelistModal');
-            const modalMessageSpan = document.getElementById('modalMessageText');
-            const modalCloseBtn = document.getElementById('modalCloseBtn');
-            
-            // ---------- 人机验证逻辑 (戳3次可爱肉球) ----------
-            let clickCount = 0;
-            const MAX_CLICKS = 3;
-            
-            function updateVerifyUI() {
-                if (clickCount === 0) {
-                    clickCounterMsg.innerHTML = "🐾 戳我3下 ʚɞ 🐾";
-                } else if (clickCount === 1) {
-                    clickCounterMsg.innerHTML = "💕 一下啦～ 再戳两次嘛 💕";
-                } else if (clickCount === 2) {
-                    clickCounterMsg.innerHTML = "🌸 两下咯！ 最后一次！ 超乖 🌸";
-                } else if (clickCount === 3) {
-                    clickCounterMsg.innerHTML = "🎉 呜哇 认证成功啦！ 🎉";
-                    verifySuccessMsgDiv.style.display = "block";
-                    // 延迟关闭验证层，显示主界面
-                    setTimeout(() => {
-                        verifyOverlay.style.opacity = "0";
-                        setTimeout(() => {
-                            verifyOverlay.style.display = "none";
-                            mainCard.classList.add('active');
-                            // 验证完成后，如果已保存用户名则自动生成密码
-                            initMainApp();
-                        }, 400);
-                    }, 600);
-                }
+<div id="whitelistModal" class="custom-modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+        <div class="modal-emoji">🔮🧧</div>
+        <div class="modal-message" id="modalMessageText">仙缘降世，福运自临</div>
+        <button class="modal-close" id="modalCloseBtn">🙏 知晓天机 🙏</button>
+    </div>
+</div>
+<div id="toastMsg" class="toast-msg">✨ 已拓印灵符 ✨</div>
+
+<!-- 仙缘验证(点击八卦轮盘3次) -->
+<div id="verifyOverlay" class="verify-overlay">
+    <div class="verify-card">
+        <div class="verify-emoji">⚛️☯️</div>
+        <div class="verify-title">灵识验证</div>
+        <div class="verify-desc">🏮 请证明你是红尘有缘之人，而非机械傀儡 🏮</div>
+        <div id="divineClickZone" class="divine-trigger-area">
+            <div class="paw-emoji">🌀🔮🌀</div>
+            <div class="click-counter" id="clickCounterMsg">✦ 轻点法阵 3 次 开灵 ✦</div>
+        </div>
+        <div class="verify-tip">✨ 道蕴流转 · 每触一次即聚一缕灵气 ✨</div>
+        <div id="verifySuccessMsg" class="verify-success">✨ 灵光乍现 · 准入道境 ✨</div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // --- 星辰背景生成 ---
+        const starContainer = document.getElementById('starField');
+        for(let i=0;i<120;i++) {
+            const star = document.createElement('div');
+            star.classList.add('star');
+            const size = Math.random() * 3 + 1;
+            star.style.width = size + 'px';
+            star.style.height = size + 'px';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.animationDelay = Math.random() * 5 + 's';
+            star.style.animationDuration = Math.random() * 2 + 2 + 's';
+            starContainer.appendChild(star);
+        }
+
+        // ----- 八卦阵 (符箓环绕 + 太极图，八卦符号沿环公转)
+        const canvas = document.getElementById('baguaCanvas');
+        const ctx = canvas.getContext('2d');
+        let rotationAngle = 0;
+        const baguaSymbols = ['坎', '坤', '震', '巽', '乾', '兑', '艮', '离'];
+        const anglesOffset = [0, 45, 90, 135, 180, 225, 270, 315].map(deg => deg * Math.PI/180);
+        let animationId = null;
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            const size = Math.min(window.innerWidth * 0.28, 320);
+            canvas.style.width = size + 'px';
+            canvas.style.height = size + 'px';
+            canvas.width = size;
+            canvas.height = size;
+            drawBagua();
+        }
+        function drawBagua() {
+            if(!ctx) return;
+            const w = canvas.width, h = canvas.height;
+            const centerX = w/2, centerY = h/2;
+            const radius = w * 0.38;
+            const outerRadius = w * 0.45;
+            ctx.clearRect(0, 0, w, h);
+            // 外圈道光
+            ctx.save();
+            ctx.shadowBlur = 12;
+            ctx.shadowColor = "#ffb86b";
+            // 八卦外环
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, outerRadius+3, 0, Math.PI*2);
+            ctx.strokeStyle = "#e8aa48";
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius+6, 0, Math.PI*2);
+            ctx.strokeStyle = "#f6cd7b";
+            ctx.setLineDash([4,6]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            // 绘制八卦符号 (公转效果)
+            const currentRot = rotationAngle; // 弧度 随时间累加
+            for(let i=0; i<baguaSymbols.length; i++) {
+                const baseAngle = anglesOffset[i];
+                const angle = baseAngle + currentRot;
+                const x = centerX + Math.cos(angle) * (radius+6);
+                const y = centerY + Math.sin(angle) * (radius+6);
+                ctx.font = `bold ${Math.floor(w * 0.09)}px "Segoe UI", "Noto Serif SC"`;
+                ctx.fillStyle = "#ffd793";
+                ctx.shadowBlur = 8;
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText(baguaSymbols[i], x, y);
             }
-            
-            function onPawClick() {
-                if (clickCount >= MAX_CLICKS) return;
-                clickCount++;
-                updateVerifyUI();
-                // 生成飘浮爱心特效 (从点击位置)
-                const rect = pawZone.getBoundingClientRect();
-                const centerX = rect.left + rect.width / 2;
-                const centerY = rect.top + rect.height / 2;
-                createFloatingHeart(centerX, centerY);
-                // 额外多飘几个
+            // 绘制太极阴阳鱼
+            const taichiR = radius * 0.7;
+            ctx.shadowBlur = 6;
+            // 大圆
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, taichiR, 0, Math.PI*2);
+            ctx.fillStyle = "#2f264f";
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, taichiR, 0, Math.PI*2);
+            ctx.strokeStyle = "#f6bc6a";
+            ctx.lineWidth = 1.8;
+            ctx.stroke();
+            // 阴阳鱼
+            ctx.beginPath();
+            ctx.arc(centerX, centerY - taichiR/2, taichiR/2, 0, Math.PI*2);
+            ctx.fillStyle = "#f3c481";
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(centerX, centerY + taichiR/2, taichiR/2, 0, Math.PI*2);
+            ctx.fillStyle = "#1e1738";
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(centerX, centerY - taichiR/2, taichiR/8, 0, Math.PI*2);
+            ctx.fillStyle = "#1e1738";
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(centerX, centerY + taichiR/2, taichiR/8, 0, Math.PI*2);
+            ctx.fillStyle = "#f3c481";
+            ctx.fill();
+            ctx.restore();
+        }
+        function animateBagua() {
+            rotationAngle += 0.008;
+            drawBagua();
+            animationId = requestAnimationFrame(animateBagua);
+        }
+        window.addEventListener('resize', () => { resizeCanvas(); });
+        resizeCanvas();
+        animateBagua();
+
+        // ---------- UI元素绑定 ----------
+        const mainCard = document.getElementById('mainCard');
+        const verifyOverlay = document.getElementById('verifyOverlay');
+        const divineZone = document.getElementById('divineClickZone');
+        const clickCounterMsg = document.getElementById('clickCounterMsg');
+        const verifySuccessMsgDiv = document.getElementById('verifySuccessMsg');
+        const usernameInput = document.getElementById('usernameInput');
+        const todayDateSpan = document.getElementById('todayDateDisplay');
+        const passwordDisplayDiv = document.getElementById('passwordDisplay');
+        const copyBtn = document.getElementById('copyBtn');
+        const refreshDateBtn = document.getElementById('refreshDateBtn');
+        const manualGenBtn = document.getElementById('manualGenBtn');
+        const clearMemoryBtn = document.getElementById('clearMemoryBtn');
+        const toastEl = document.getElementById('toastMsg');
+        const whitelistModal = document.getElementById('whitelistModal');
+        const modalMessageSpan = document.getElementById('modalMessageText');
+        const modalCloseBtn = document.getElementById('modalCloseBtn');
+        
+        // 验证计数 (点击法阵3次)
+        let clickCount = 0;
+        const MAX_CLICKS = 3;
+        function updateVerifyUI() {
+            if(clickCount === 0) clickCounterMsg.innerHTML = "🌀 点触法阵 3 次 启灵 🌀";
+            else if(clickCount === 1) clickCounterMsg.innerHTML = "✨ 一叩仙门 · 再点两次 ✨";
+            else if(clickCount === 2) clickCounterMsg.innerHTML = "🌙 二启灵识 · 最后一下 🌙";
+            else if(clickCount === 3) {
+                clickCounterMsg.innerHTML = "🎋 道缘已至 · 恭迎真人 🎋";
+                verifySuccessMsgDiv.style.display = "block";
                 setTimeout(() => {
-                    createFloatingHeart(centerX + (Math.random() - 0.5)*30, centerY + (Math.random() - 0.5)*30);
-                }, 50);
-                // 震动感（可选无伤大雅）
-                pawZone.style.transform = "scale(0.96)";
-                setTimeout(() => { pawZone.style.transform = ""; }, 120);
-            }
-            
-            // 飘浮爱心 (全局)
-            function createFloatingHeart(x, y) {
-                const heart = document.createElement('div');
-                heart.className = 'floating-heart';
-                const emojis = ['💖', '🌸', '🐱', '✨', '🍰', '💕', '🐾'];
-                heart.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
-                heart.style.left = (x - 20) + 'px';
-                heart.style.top = (y - 20) + 'px';
-                document.body.appendChild(heart);
-                setTimeout(() => heart.remove(), 1000);
-            }
-            
-            // 按钮按压动画 + 爱心 (无音频)
-            function addButtonEffect(btnElement) {
-                if (!btnElement) return;
-                btnElement.addEventListener('click', (e) => {
-                    btnElement.classList.add('btn-clicked');
-                    setTimeout(() => btnElement.classList.remove('btn-clicked'), 120);
-                    const rect = btnElement.getBoundingClientRect();
-                    const centerX = rect.left + rect.width / 2;
-                    const centerY = rect.top + rect.height / 2;
-                    createFloatingHeart(centerX, centerY);
+                    verifyOverlay.style.opacity = "0";
                     setTimeout(() => {
-                        createFloatingHeart(centerX + (Math.random() - 0.5) * 40, centerY + (Math.random() - 0.5) * 30);
-                    }, 50);
-                });
+                        verifyOverlay.style.display = "none";
+                        mainCard.classList.add('active');
+                        initMainApp();
+                    }, 500);
+                }, 600);
             }
-            
-            // ---------- 白名单配置 (可设置多人的专属弹窗消息) 更肉麻版本 ----------
-            const whitelistMessages = {
-                "小草莓": "🍓 小草莓宝贝！ 今天也是甜甜的一天，快让喵喵亲一口～ 💋💖",
-                "胖喵酱": "🐱 胖喵酱小可爱驾到！ 捏捏你的小脸蛋，今天必须开心！ 🌸",
-                "不二胖喵": "✨ 主人回家啦！ 不二胖喵的心扑通扑通，好想你呀～ 🎀 要抱抱！",
-                "布丁": "🍮 呜～布丁小软糖！ 给你全世界最甜的拥抱 🥰 啵啵！",
-                "奶茶": "🧋 奶茶宝贝，你的甜度已经超过全糖啦！ 今天也要元气满满哟 💗",
-                "牟晨稳": "🐮 牟牟宝宝乖乖～ 你要做全世界最听话的小牛牛 啾咪❤️",
-                "邱德良": "✨ 帅气毛毛邱德良！ 今天的晚霞和你一样浪漫，黄色的小星星都为你闪呀闪 🌟",
-                "刘哲": "🌸 小哲哲～ 你一来空气都变甜了！ 给你一个能把冰山融化的抱抱 🧸",
-                "王浩": "🐾 诶呀是王浩宝宝，你居然有女朋友，有女朋友了你还来找我!生气气 🐕💖",
-                "杨玲飞": "是小飞飞哦~  可可爱爱的小飞飞(づ◡ど)"
-            };
-            
-            function showWhitelistMessageIfNeeded(username) {
-                if (!username) return false;
-                const lowerKey = username.toLowerCase();
-                let matchedMessage = null;
-                for (let [key, msg] of Object.entries(whitelistMessages)) {
-                    if (key.toLowerCase() === lowerKey) {
-                        matchedMessage = msg;
-                        break;
-                    }
-                }
-                if (matchedMessage) {
-                    modalMessageSpan.innerText = matchedMessage;
-                    whitelistModal.classList.add('show');
-                    // 弹窗出现也飘个爱心
-                    createFloatingHeart(window.innerWidth/2, window.innerHeight/2);
-                    return true;
-                }
-                return false;
-            }
-            
-            function closeModal() {
-                whitelistModal.classList.remove('show');
-            }
-            modalCloseBtn.addEventListener('click', closeModal);
-            whitelistModal.addEventListener('click', (e) => {
-                if (e.target === whitelistModal || e.target.classList.contains('modal-overlay')) closeModal();
+        }
+        function createSpiritEffect(x, y) {
+            const spirit = document.createElement('div');
+            spirit.className = 'floating-spirit';
+            const symbols = ['☯', '⚡', '🔮', '✨', '🌟', '🏮', '🐉', '⚜️'];
+            spirit.innerHTML = symbols[Math.floor(Math.random() * symbols.length)];
+            spirit.style.left = (x - 20) + 'px';
+            spirit.style.top = (y - 20) + 'px';
+            document.body.appendChild(spirit);
+            setTimeout(() => spirit.remove(), 1300);
+        }
+        function onDivineTap(e) {
+            if(clickCount >= MAX_CLICKS) return;
+            clickCount++;
+            updateVerifyUI();
+            const rect = divineZone.getBoundingClientRect();
+            const cx = rect.left + rect.width/2;
+            const cy = rect.top + rect.height/2;
+            createSpiritEffect(cx, cy);
+            createSpiritEffect(cx+15, cy-10);
+            divineZone.style.transform = "scale(0.96)";
+            setTimeout(() => divineZone.style.transform = "", 120);
+        }
+        divineZone.addEventListener('click', onDivineTap);
+        
+        // 按钮特效灵气
+        function addButtonSpirit(btn) {
+            if(!btn) return;
+            btn.addEventListener('click', (e) => {
+                btn.classList.add('btn-clicked');
+                setTimeout(() => btn.classList.remove('btn-clicked'), 120);
+                const rect = btn.getBoundingClientRect();
+                createSpiritEffect(rect.left + rect.width/2, rect.top + rect.height/2);
+                setTimeout(() => createSpiritEffect(rect.left+20, rect.top+10), 60);
             });
-            
-            // 核心功能函数
-            function getTodayDateStr() {
-                const now = new Date();
-                const year = now.getFullYear();
-                const month = String(now.getMonth() + 1).padStart(2, '0');
-                const day = String(now.getDate()).padStart(2, '0');
-                return `${year}${month}${day}`;
-            }
-            
-            function generateDailyPassword(username, dateStr) {
-                if (!username || username.trim() === "") return null;
-                const cleanName = username.trim();
-                const rawString = `${cleanName}-${dateStr}-${cleanName}`;
-                return CryptoJS.MD5(rawString).toString();
-            }
-            
-            function showToast(message, isError = false) {
-                toastEl.textContent = message || (isError ? '❌ 操作失败' : '🌸 操作成功');
-                toastEl.style.background = isError ? "#ff99bbdd" : "#ff90b5dd";
-                toastEl.style.opacity = '1';
-                setTimeout(() => { toastEl.style.opacity = '0'; }, 1800);
-            }
-            
-            let lastTriggeredWhitelistUser = "";
-            function refreshAll(updateStorageFlag = true, triggerModal = true) {
-                const todayDate = getTodayDateStr();
-                todayDateSpan.innerText = todayDate;
-                const rawUsername = usernameInput.value;
-                const finalUsername = rawUsername ? rawUsername.trim() : "";
-                
-                if (finalUsername === "") {
-                    passwordDisplayDiv.innerHTML = '🐣 喵呜~ 先输入可爱的用户名吧 🐣';
-                    passwordDisplayDiv.classList.add('error-pwd');
-                    passwordDisplayDiv.setAttribute('data-valid-pwd', 'false');
-                    passwordDisplayDiv.setAttribute('data-pwd-value', '');
-                    return;
-                }
-                
-                const generatedPwd = generateDailyPassword(finalUsername, todayDate);
-                if (generatedPwd) {
-                    passwordDisplayDiv.innerHTML = generatedPwd;
-                    passwordDisplayDiv.classList.remove('error-pwd');
-                    passwordDisplayDiv.setAttribute('data-valid-pwd', 'true');
-                    passwordDisplayDiv.setAttribute('data-pwd-value', generatedPwd);
-                    
-                    if (updateStorageFlag) {
-                        localStorage.setItem('daily_pwd_username', finalUsername);
-                    }
-                    
-                    if (triggerModal && finalUsername !== lastTriggeredWhitelistUser) {
-                        const isWhitelisted = showWhitelistMessageIfNeeded(finalUsername);
-                        if (isWhitelisted) lastTriggeredWhitelistUser = finalUsername;
-                    }
-                } else {
-                    passwordDisplayDiv.innerHTML = '❌ 密码生成失败';
-                    passwordDisplayDiv.setAttribute('data-valid-pwd', 'false');
-                    passwordDisplayDiv.setAttribute('data-pwd-value', '');
+        }
+        
+        // 白名单命理箴言(玄幻版)
+        const fateMessages = {
+            "小草莓": "🍓 灵签·小草莓：今日红鸾星动，心有灵犀，万事易成。",
+            "胖喵酱": "🐱 福运·胖喵酱：太阴照命，食禄丰盈，宜躺平纳福。",
+            "不二胖喵": "✨ 神谕·不二胖喵：本命元神归位，大吉大利，诸事随心。",
+            "布丁": "🍮 甜运·布丁：福星高照，所求皆甜润，顺遂无忧。",
+            "奶茶": "🧋 气运·奶茶： 五行合和，谋事可成，今日宜主动。",
+            "牟晨稳": "🐮 牟晨稳：紫气东来，脚踏实地，福泽绵长。",
+            "邱德良": "🌟 邱德良：天魁入命，贵气加持，大利财帛。",
+            "刘哲": "📜 刘哲：文曲星辉，智慧通达，学业事业双吉。",
+            "王浩": "🐕 王浩：白虎辅佐，威势初显，宜进取功名。",
+            "杨玲飞": "🕊️ 杨玲飞：天禧临门，喜乐常在，人缘上佳。"
+        };
+        function showDivineMessage(username) {
+            if(!username) return false;
+            const lowerName = username.toLowerCase();
+            let matchedMsg = null;
+            for(let [key, msg] of Object.entries(fateMessages)) {
+                if(key.toLowerCase() === lowerName) {
+                    matchedMsg = msg;
+                    break;
                 }
             }
-            
-            function forceRegenerate(triggerModal = true) {
-                const todayDate = getTodayDateStr();
-                todayDateSpan.innerText = todayDate;
-                const rawUsername = usernameInput.value;
-                const finalUsername = rawUsername ? rawUsername.trim() : "";
-                if (finalUsername === "") {
-                    passwordDisplayDiv.innerHTML = '🐣 喵~ 先输入可爱的用户名吧 🐣';
-                    passwordDisplayDiv.setAttribute('data-valid-pwd', 'false');
-                    passwordDisplayDiv.setAttribute('data-pwd-value', '');
-                    return;
-                }
-                const newPwd = generateDailyPassword(finalUsername, todayDate);
-                if (newPwd) {
-                    passwordDisplayDiv.innerHTML = newPwd;
-                    passwordDisplayDiv.classList.remove('error-pwd');
-                    passwordDisplayDiv.setAttribute('data-valid-pwd', 'true');
-                    passwordDisplayDiv.setAttribute('data-pwd-value', newPwd);
-                    localStorage.setItem('daily_pwd_username', finalUsername);
-                    if (triggerModal && finalUsername !== lastTriggeredWhitelistUser) {
-                        const isWhitelisted = showWhitelistMessageIfNeeded(finalUsername);
-                        if (isWhitelisted) lastTriggeredWhitelistUser = finalUsername;
-                    }
-                } else {
-                    passwordDisplayDiv.innerHTML = '❌ 生成失败';
-                    passwordDisplayDiv.setAttribute('data-valid-pwd', 'false');
-                    passwordDisplayDiv.setAttribute('data-pwd-value', '');
-                }
+            if(matchedMsg) {
+                modalMessageSpan.innerText = "🔮 「" + matchedMsg + "」 🔮";
+                whitelistModal.classList.add('show');
+                createSpiritEffect(window.innerWidth/2, window.innerHeight/2);
+                return true;
             }
-            
-            function copyCurrentPassword() {
-                const isValid = passwordDisplayDiv.getAttribute('data-valid-pwd') === 'true';
-                const currentPwd = passwordDisplayDiv.getAttribute('data-pwd-value');
-                if (!isValid || !currentPwd || currentPwd === "") {
-                    showToast('💔 还没有有效密码，先输入昵称吖～', true);
-                    return;
-                }
-                navigator.clipboard.writeText(currentPwd).then(() => {
-                    showToast('🐱 密码复制好啦！ 喵呜～～', false);
-                }).catch(() => {
-                    showToast('❌ 复制失败，但你可以手动戳一戳密码', true);
-                });
-            }
-            
-            let debounceTimer;
-            function onUsernameInput() {
-                if (debounceTimer) clearTimeout(debounceTimer);
-                debounceTimer = setTimeout(() => {
-                    const val = usernameInput.value;
-                    const trimmed = val ? val.trim() : "";
-                    if (trimmed === "") {
-                        const todayDate = getTodayDateStr();
-                        todayDateSpan.innerText = todayDate;
-                        passwordDisplayDiv.innerHTML = '🐣 喵~ 先输入可爱的用户名吧 🐣';
-                        passwordDisplayDiv.classList.add('error-pwd');
-                        passwordDisplayDiv.setAttribute('data-valid-pwd', 'false');
-                        passwordDisplayDiv.setAttribute('data-pwd-value', '');
-                    } else {
-                        refreshAll(true, true);
-                    }
-                }, 300);
-            }
-            
-            function clearUsernameMemory() {
-                localStorage.removeItem('daily_pwd_username');
-                usernameInput.value = '';
-                const todayDate = getTodayDateStr();
-                todayDateSpan.innerText = todayDate;
-                passwordDisplayDiv.innerHTML = '🌸 记忆已清除·输入新名字吧 🌸';
-                passwordDisplayDiv.classList.add('error-pwd');
+            return false;
+        }
+        function closeModal() { whitelistModal.classList.remove('show'); }
+        modalCloseBtn.addEventListener('click', closeModal);
+        whitelistModal.addEventListener('click', (e) => {
+            if(e.target === whitelistModal || e.target.classList.contains('modal-overlay')) closeModal();
+        });
+        
+        // 核心MD5生成
+        function getTodayDateStr() {
+            const now = new Date();
+            const y = now.getFullYear();
+            const m = String(now.getMonth()+1).padStart(2,'0');
+            const d = String(now.getDate()).padStart(2,'0');
+            return `${y}${m}${d}`;
+        }
+        function generatePassword(username, dateStr) {
+            if(!username || username.trim()==="") return null;
+            const raw = `${username.trim()}-${dateStr}-${username.trim()}`;
+            return CryptoJS.MD5(raw).toString();
+        }
+        function showToast(msg, isErr=false) {
+            toastEl.textContent = msg;
+            toastEl.style.background = isErr ? "#5c2a3bcc" : "#1e153acc";
+            toastEl.style.opacity = '1';
+            setTimeout(() => toastEl.style.opacity = '0', 1800);
+        }
+        let lastModalUser = "";
+        function refreshAll(saveStorage=true, triggerModal=true) {
+            const today = getTodayDateStr();
+            todayDateSpan.innerText = today;
+            const rawUser = usernameInput.value;
+            const finalUser = rawUser ? rawUser.trim() : "";
+            if(finalUser === "") {
+                passwordDisplayDiv.innerHTML = '🌙 道号未显 · 先书灵名 🌙';
                 passwordDisplayDiv.setAttribute('data-valid-pwd', 'false');
                 passwordDisplayDiv.setAttribute('data-pwd-value', '');
-                lastTriggeredWhitelistUser = "";
-                showToast('🧹 用户名记忆已清除啦', false);
-                createFloatingHeart(window.innerWidth/2, window.innerHeight/2);
+                return;
             }
-            
-            // 初始化主应用 (验证通过后调用)
-            function initMainApp() {
-                const savedUsername = localStorage.getItem('daily_pwd_username');
-                if (savedUsername && savedUsername.trim() !== "") {
-                    usernameInput.value = savedUsername;
-                    refreshAll(true, false);  // 加载时不弹白名单
+            const pwd = generatePassword(finalUser, today);
+            if(pwd) {
+                passwordDisplayDiv.innerHTML = pwd;
+                passwordDisplayDiv.setAttribute('data-valid-pwd', 'true');
+                passwordDisplayDiv.setAttribute('data-pwd-value', pwd);
+                if(saveStorage) localStorage.setItem('daily_pwd_username', finalUser);
+                if(triggerModal && finalUser !== lastModalUser) {
+                    if(showDivineMessage(finalUser)) lastModalUser = finalUser;
+                }
+            } else {
+                passwordDisplayDiv.innerHTML = '❌ 演算失灵，请再试';
+                passwordDisplayDiv.setAttribute('data-valid-pwd', 'false');
+            }
+        }
+        function forceRegenerate(triggerModal=true) {
+            const today = getTodayDateStr();
+            todayDateSpan.innerText = today;
+            const user = usernameInput.value.trim();
+            if(user === "") {
+                passwordDisplayDiv.innerHTML = '🌙 道号未显 · 先书灵名 🌙';
+                return;
+            }
+            const newPwd = generatePassword(user, today);
+            if(newPwd) {
+                passwordDisplayDiv.innerHTML = newPwd;
+                passwordDisplayDiv.setAttribute('data-valid-pwd','true');
+                passwordDisplayDiv.setAttribute('data-pwd-value', newPwd);
+                localStorage.setItem('daily_pwd_username', user);
+                if(triggerModal && user !== lastModalUser) {
+                    if(showDivineMessage(user)) lastModalUser = user;
+                }
+            }
+        }
+        function copyPassword() {
+            const isValid = passwordDisplayDiv.getAttribute('data-valid-pwd') === 'true';
+            const pwd = passwordDisplayDiv.getAttribute('data-pwd-value');
+            if(!isValid || !pwd) {
+                showToast('⛔ 尚无灵符，请先输入道号', true);
+                return;
+            }
+            navigator.clipboard.writeText(pwd).then(() => showToast('📜 灵符已拓印至天书', false))
+            .catch(() => showToast('❌ 拓印失败，可手动复刻', true));
+        }
+        let debTimer;
+        function onUsernameInput() {
+            if(debTimer) clearTimeout(debTimer);
+            debTimer = setTimeout(() => {
+                const val = usernameInput.value;
+                if(!val.trim()) {
+                    todayDateSpan.innerText = getTodayDateStr();
+                    passwordDisplayDiv.innerHTML = '🌙 道号未显 · 先书灵名 🌙';
+                    passwordDisplayDiv.setAttribute('data-valid-pwd','false');
                 } else {
-                    const todayDate = getTodayDateStr();
-                    todayDateSpan.innerText = todayDate;
-                    passwordDisplayDiv.innerHTML = '💕 输入你的名字，生成今日密码 💕';
-                    passwordDisplayDiv.classList.add('error-pwd');
-                    passwordDisplayDiv.setAttribute('data-valid-pwd', 'false');
-                    passwordDisplayDiv.setAttribute('data-pwd-value', '');
-                    usernameInput.value = '';
+                    refreshAll(true, true);
                 }
-                
-                // 绑定事件
-                usernameInput.addEventListener('input', onUsernameInput);
-                copyBtn.addEventListener('click', copyCurrentPassword);
-                refreshDateBtn.addEventListener('click', () => {
-                    forceRegenerate(true);
-                    showToast('✨ 已刷新为最新日期密码 ✨', false);
-                });
-                manualGenBtn.addEventListener('click', () => {
-                    forceRegenerate(true);
-                    showToast('🐾 已同步最新密码～', false);
-                });
-                clearMemoryBtn.addEventListener('click', clearUsernameMemory);
-                
-                addButtonEffect(copyBtn);
-                addButtonEffect(refreshDateBtn);
-                addButtonEffect(manualGenBtn);
-                addButtonEffect(clearMemoryBtn);
+            }, 280);
+        }
+        function clearUserMemory() {
+            localStorage.removeItem('daily_pwd_username');
+            usernameInput.value = '';
+            todayDateSpan.innerText = getTodayDateStr();
+            passwordDisplayDiv.innerHTML = '🧹 记忆洗净 · 再入红尘 🧹';
+            passwordDisplayDiv.setAttribute('data-valid-pwd','false');
+            lastModalUser = "";
+            showToast('灵名已从轮回中消除', false);
+            createSpiritEffect(window.innerWidth/2, window.innerHeight/2);
+        }
+        function initMainApp() {
+            const saved = localStorage.getItem('daily_pwd_username');
+            if(saved && saved.trim() !== "") {
+                usernameInput.value = saved;
+                refreshAll(true, false);
+            } else {
+                todayDateSpan.innerText = getTodayDateStr();
+                passwordDisplayDiv.innerHTML = '✨ 输入灵名，天机自现 ✨';
             }
-            
-            // 窗口焦点自动更新日期
-            window.addEventListener('focus', () => {
-                if (mainCard.classList.contains('active')) {
-                    const realToday = getTodayDateStr();
-                    const currentDisplay = todayDateSpan.innerText;
-                    if (currentDisplay !== realToday) {
-                        forceRegenerate(false);
-                        showToast('📅 新的一天！密码自动更新啦', false);
-                    }
-                }
-            });
-            
-            // 启动验证流程
-            pawZone.addEventListener('click', onPawClick);
-            // 确保验证层一开始可见
-            verifyOverlay.style.display = "flex";
-            mainCard.classList.remove('active');
-        })();
-    </script>
+            usernameInput.addEventListener('input', onUsernameInput);
+            copyBtn.addEventListener('click', copyPassword);
+            refreshDateBtn.addEventListener('click', () => { forceRegenerate(true); showToast('🪷 重演天机，新符已显', false); });
+            manualGenBtn.addEventListener('click', () => { forceRegenerate(true); showToast('📿 推演完毕，灵符再临', false); });
+            clearMemoryBtn.addEventListener('click', clearUserMemory);
+            addButtonSpirit(copyBtn); addButtonSpirit(refreshDateBtn); addButtonSpirit(manualGenBtn); addButtonSpirit(clearMemoryBtn);
+        }
+        window.addEventListener('focus', () => {
+            if(mainCard.classList.contains('active')) {
+                const realToday = getTodayDateStr();
+                if(todayDateSpan.innerText !== realToday) forceRegenerate(false);
+            }
+        });
+    })();
+</script>
 </body>
-
 </html>
