@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>网络连接异常</title>
+    <style>
+        /* 全局重置 – 庄重、干净、无冗余 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #eef1f5;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", Roboto, Arial, sans-serif;
+            padding: 20px;
+            margin: 0;
+            /* 沉稳的底色，无渐变 */
+            background-color: #e9edf2;
+        }
+
+        /* 卡片 – 简洁、稳重、类似系统对话框 */
+        .card {
+            max-width: 360px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 44px 28px 40px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06), 0 2px 6px rgba(0, 0, 0, 0.04);
+            text-align: center;
+            border: 1px solid rgba(200, 210, 220, 0.3);
+            transition: none;
+            /* 无任何动态故障特效，保持严肃 */
+        }
+
+        /* 加载圆环 – 标准单色，匀速旋转 */
+        .spinner-wrapper {
+            margin: 0 auto 28px;
+            width: 64px;
+            height: 64px;
+            position: relative;
+        }
+
+        .spinner {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 5px solid #dce1e8;
+            border-top-color: #2c3e50;
+            /* 深灰蓝，凸显稳重 */
+            border-bottom-color: #dce1e8;
+            /* 保持底部浅色，形成对比 */
+            animation: spin 1.2s linear infinite;
+            will-change: transform;
+            box-shadow: 0 0 0 1px rgba(0,0,0,0.02);
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 标题 – 严肃、明确 */
+        .title {
+            font-size: 22px;
+            font-weight: 600;
+            color: #1f2937;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            /* 纯色，无渐变 */
+        }
+
+        /* 描述 – 清晰状态 */
+        .desc {
+            font-size: 16px;
+            color: #4b5563;
+            line-height: 1.6;
+            margin-bottom: 8px;
+            font-weight: 400;
+        }
+
+        /* 重试状态 – 显示计时，增加“正在努力”的庄重感 */
+        .status {
+            font-size: 15px;
+            color: #6b7a8f;
+            background: #f3f6fa;
+            padding: 8px 18px;
+            border-radius: 30px;
+            display: inline-block;
+            margin: 16px auto 10px;
+            border: 1px solid #e5eaf0;
+            letter-spacing: 0.3px;
+            font-weight: 400;
+        }
+
+        .status span {
+            font-weight: 500;
+            color: #1f2937;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* 分割线 – 增加层次，不花哨 */
+        .divider {
+            width: 40px;
+            height: 2px;
+            background: #d1d9e3;
+            margin: 22px auto 18px;
+            border-radius: 2px;
+            opacity: 0.6;
+        }
+
+        /* 操作提示 – 专业、冷静 */
+        .hint {
+            font-size: 14px;
+            color: #6b7a8f;
+            line-height: 1.5;
+            letter-spacing: 0.2px;
+            background: transparent;
+            padding: 0 4px;
+        }
+
+        .hint i {
+            font-style: normal;
+            background: #edf2f7;
+            padding: 0 10px;
+            border-radius: 12px;
+            color: #4a5a6e;
+            font-size: 13px;
+            display: inline-block;
+            margin: 0 2px;
+            border: 1px solid #e2e8f0;
+        }
+
+        /* 底部脚标 – 极简，无表情符号 */
+        .footer-note {
+            margin-top: 24px;
+            font-size: 12px;
+            color: #94a3b8;
+            border-top: 1px solid #edf2f7;
+            padding-top: 18px;
+            letter-spacing: 0.2px;
+        }
+
+        /* 手机端微调 – 保持舒适阅读 */
+        @media (max-width: 420px) {
+            .card {
+                padding: 36px 20px 32px;
+                border-radius: 16px;
+            }
+            .spinner-wrapper {
+                width: 56px;
+                height: 56px;
+                margin-bottom: 24px;
+            }
+            .title {
+                font-size: 20px;
+            }
+            .desc {
+                font-size: 15px;
+            }
+            .status {
+                font-size: 14px;
+                padding: 6px 16px;
+            }
+            .hint {
+                font-size: 13px;
+            }
+        }
+
+        /* 避免任何动态闪烁或故障效果 */
+        .no-glitch {
+            animation: none;
+        }
+
+        /* 按钮（如果需要，但此处只做状态展示，不加交互按钮以保持“加载中”纯粹） */
+        .card {
+            user-select: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <!-- 加载圆环：永远旋转 -->
+        <div class="spinner-wrapper">
+            <div class="spinner"></div>
+        </div>
+
+        <!-- 核心文案：庄重、明确 -->
+        <h1 class="title">网络连接异常</h1>
+        <p class="desc">服务器响应超时，系统正在尝试重新连接</p>
+
+        <!-- 状态计时：严肃地显示等待时长 -->
+        <div class="status">
+            已等待 <span id="waitSeconds">0</span> 秒
+        </div>
+
+        <!-- 低调分割 -->
+        <div class="divider"></div>
+
+        <!-- 故障排查提示：冷静专业 -->
+        <p class="hint">
+            请检查本地网络与代理设置，<br>或联系网络管理员。
+        </p>
+
+        <!-- 底部时间戳：仅显示最后尝试时间，不闪烁 -->
+        <div class="footer-note">
+            最后尝试 · <span id="lastTryTime">--:--:--</span>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            "use strict";
+
+            // 获取元素
+            const secondsSpan = document.getElementById('waitSeconds');
+            const lastTrySpan = document.getElementById('lastTryTime');
+
+            // 初始化计时器
+            let seconds = 0;
+            // 显示首次尝试时间
+            function updateLastTry() {
+                const now = new Date();
+                const h = String(now.getHours()).padStart(2, '0');
+                const m = String(now.getMinutes()).padStart(2, '0');
+                const s = String(now.getSeconds()).padStart(2, '0');
+                lastTrySpan.textContent = h + ':' + m + ':' + s;
+            }
+            updateLastTry();
+
+            // 每秒更新等待秒数，体现“持续重试”的严肃感
+            function tick() {
+                seconds += 1;
+                secondsSpan.textContent = seconds;
+            }
+
+            // 立即显示初始值
+            secondsSpan.textContent = '0';
+            
+            // 启动计时器（每秒更新）
+            const timerInterval = setInterval(tick, 1000);
+
+            // 每分钟更新一次“最后尝试时间”，保持庄重而不频繁闪烁
+            setInterval(function() {
+                updateLastTry();
+            }, 60000); // 每分钟刷新一次，避免视觉焦躁
+
+            // 页面可见性变化时不停止计时，持续保持加载状态
+            document.addEventListener('visibilitychange', function() {
+                // 什么也不做，计时器持续运行，体现“后台依然在努力”
+            });
+
+            // 如果用户离开页面再返回，计时依然连续（不做重置）
+            // 优雅降级：如果页面被冻结极久，也不影响核心体验
+
+            // 可选：在控制台输出严肃信息（非必需）
+            console.log('[系统] 网络连接异常，持续重试中...');
+
+            // 额外：点击页面任何地方都不干扰加载（保持纯粹状态）
+            // 没有任何停止加载的逻辑
+
+        })();
+    </script>
+</body>
+</html>
