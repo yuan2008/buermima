@@ -24,9 +24,7 @@
             --radius-lg: 28px;
             --input-bg: rgba(0,0,0,0.03);
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
         body {
             background: var(--bg);
             min-height: 100vh;
@@ -39,9 +37,7 @@
             -moz-osx-font-smoothing: grayscale;
             color: var(--text);
         }
-
         .container { width: 100%; max-width: 420px; }
-
         /* ---- Frosted Glass Card ---- */
         .card {
             background: var(--card-bg);
@@ -54,7 +50,6 @@
             opacity: 0;
             transform: translateY(24px);
         }
-
         /* ---- Header ---- */
         .header { text-align: center; margin-bottom: 24px; }
         .icon {
@@ -74,7 +69,6 @@
             margin-top: 4px;
             font-weight: 400;
         }
-
         /* ---- Pricing Notice Banner ---- */
         .pricing-banner {
             background: rgba(0,0,0,0.04);
@@ -100,7 +94,6 @@
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.45; transform: scale(0.75); }
         }
-
         /* ---- Input ---- */
         .input-group { margin-bottom: 18px; }
         .input-label {
@@ -135,7 +128,6 @@
             transition: all 0.2s;
         }
         .clear-btn:hover { color: #ff3b30; }
-
         /* ---- Date Badge ---- */
         .date-badge {
             background: var(--input-bg);
@@ -163,7 +155,6 @@
         }
         .refresh-date-btn:hover { background: rgba(0,113,227,0.06); }
         .refresh-date-btn:active { transform: scale(0.96); }
-
         /* ---- Password Display ---- */
         .password-area {
             background: var(--input-bg);
@@ -186,7 +177,6 @@
             min-height: 44px; display: flex; align-items: center;
         }
         .password-value.empty { color: var(--text-secondary); }
-
         /* ---- Buttons ---- */
         .button-group { display: flex; gap: 12px; margin-bottom: 14px; }
         .btn {
@@ -208,13 +198,11 @@
         }
         .btn-outline:hover { background: rgba(0,0,0,0.06); }
         .btn-outline:active { transform: scale(0.97); }
-
         /* ---- Footer ---- */
         footer {
             text-align: center; font-size: 0.65rem; color: var(--text-secondary);
             opacity: 0.7;
         }
-
         /* ---- Toast ---- */
         .toast-msg {
             position: fixed; bottom: 40px; left: 50%;
@@ -231,7 +219,74 @@
             opacity: 1;
             transform: translateX(-50%) translateY(0);
         }
-
+        /* ==========新增收费弹窗样式========== */
+        .modal-overlay{
+            position: fixed;
+            inset:0;
+            background:rgba(0,0,0,0.45);
+            backdrop-filter:blur(8px);
+            -webkit-backdrop-filter:blur(8px);
+            z-index:9999;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            padding:20px;
+            opacity:0;
+            pointer-events:none;
+        }
+        .modal-overlay.active{
+            opacity:1;
+            pointer-events:auto;
+        }
+        .modal-box{
+            width:100%;
+            max-width:380px;
+            background:#ffffff;
+            border-radius:var(--radius-lg);
+            box-shadow:0 15px 50px rgba(0,0,0,0.18);
+            padding:24px 22px;
+            transform:scale(0.92) translateY(12px);
+            transition:0.28s ease;
+        }
+        .modal-overlay.active .modal-box{
+            transform:scale(1) translateY(0);
+        }
+        .modal-title{
+            font-size:1.2rem;
+            font-weight:600;
+            text-align:center;
+            margin-bottom:16px;
+        }
+        .modal-content{
+            font-size:0.9rem;
+            line-height:1.65;
+            color:#333;
+            margin-bottom:18px;
+        }
+        .price-item{
+            padding:6px 0;
+        }
+        .modal-small-tip{
+            font-size:0.76rem;
+            color:#777;
+            margin-top:10px;
+            line-height:1.55;
+        }
+        .modal-close-btn{
+            width:100%;
+            padding:12px;
+            border-radius:100px;
+            border:none;
+            background:var(--accent);
+            color:#fff;
+            font-size:0.95rem;
+            font-weight:500;
+            cursor:pointer;
+            margin-top:8px;
+        }
+        .modal-close-btn:active{
+            transform:scale(0.97);
+        }
         @media (max-width: 480px) {
             .card { padding: 1.5rem 1.2rem; border-radius: 24px; }
             .button-group { gap: 10px; }
@@ -248,13 +303,11 @@
             <h1>每日密钥</h1>
             <div class="sub">Daily Password Generator</div>
         </div>
-
         <!-- Pricing Notice -->
         <div class="pricing-banner" id="pricingBanner">
             <span class="dot"></span>
             <span>下学期起本软件将开始收费，具体细节待管理员通知。</span>
         </div>
-
         <!-- Username Input -->
         <div class="input-group">
             <div class="input-label">昵称 / Username</div>
@@ -263,7 +316,6 @@
                 <button id="clearMemoryBtn" class="clear-btn" type="button">清除记忆</button>
             </div>
         </div>
-
         <!-- Date -->
         <div class="date-badge">
             <div class="date-info">
@@ -272,25 +324,37 @@
             </div>
             <button id="refreshDateBtn" class="refresh-date-btn">刷新</button>
         </div>
-
         <!-- Password -->
         <div class="password-area">
             <div class="password-label">今日密码 · MD5</div>
             <div id="passwordDisplay" class="password-value empty">输入用户名后自动生成</div>
         </div>
-
         <!-- Actions -->
         <div class="button-group">
             <button id="copyBtn" class="btn btn-primary">复制密码</button>
             <button id="manualGenBtn" class="btn btn-outline">生成 / 同步</button>
         </div>
-
         <footer>每日密钥 · Daily Key</footer>
+    </div>
+</div>
+<!-- =========新增收费弹窗DOM========= -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal-box">
+        <div class="modal-title">预计收费通知</div>
+        <div class="modal-content">
+            <p>该程序可能将于新生开学后进行收费，具体的时间根据时间安排就行。后续可能考虑重新制作安卓版，并尝试对脚本版本进行优化</p>
+            <div class="price-item">• 三块钱一天(适合临时干)</div>
+            <div class="price-item">• 20块钱7天(周卡，建议短期干)</div>
+            <div class="price-item">• 80块钱30天(适合长期干)</div>
+            <div class="modal-small-tip">
+                7天和30天在下午5点之后进行交费的会多送一天，也就是赠送当天
+            </div>
+        </div>
+        <button class="modal-close-btn" id="modalCloseBtn">我知道了</button>
     </div>
 </div>
 
 <div id="toastMsg" class="toast-msg"></div>
-
 <script>
 (function() {
     const usernameInput = document.getElementById('usernameInput');
@@ -303,6 +367,21 @@
     const toastEl = document.getElementById('toastMsg');
     const card = document.getElementById('card');
     const pricingBanner = document.getElementById('pricingBanner');
+
+    //弹窗元素
+    const modalOverlay = document.getElementById('modalOverlay');
+    const modalCloseBtn = document.getElementById('modalCloseBtn');
+
+    //关闭弹窗
+    modalCloseBtn.addEventListener('click',function(){
+        modalOverlay.classList.remove('active');
+    });
+    //点击遮罩层关闭弹窗
+    modalOverlay.addEventListener('click',function(e){
+        if(e.target === modalOverlay){
+            modalOverlay.classList.remove('active');
+        }
+    });
 
     // ---- GSAP Entrance Animation ----
     gsap.to(card, {
@@ -327,7 +406,6 @@
         const d = String(now.getDate()).padStart(2, '0');
         return `${y}${m}${d}`;
     }
-
     function showToast(msg, isError) {
         toastEl.textContent = msg || (isError ? '复制失败' : '已复制到剪贴板');
         gsap.killTweensOf(toastEl);
@@ -344,24 +422,20 @@
             }
         });
     }
-
     function generateDailyPassword(username, dateStr) {
         if (!username || username.trim() === "") return null;
         const cleanName = username.trim();
         const rawString = `${cleanName}-${dateStr}-${cleanName}`;
         return CryptoJS.MD5(rawString).toString();
     }
-
     function refreshAll(updateStorageFlag) {
         const todayDate = getTodayDateStr();
         gsap.to(todayDateSpan, { opacity: 0, duration: 0.1, onComplete: function() {
             todayDateSpan.innerText = todayDate;
             gsap.to(todayDateSpan, { opacity: 1, duration: 0.2 });
         }});
-
         let rawUsername = usernameInput.value;
         let finalUsername = rawUsername ? rawUsername.trim() : "";
-
         if (finalUsername === "") {
             passwordDisplayDiv.innerHTML = '输入用户名后自动生成';
             passwordDisplayDiv.classList.add('empty');
@@ -369,7 +443,6 @@
             passwordDisplayDiv.setAttribute('data-pwd-value', '');
             return;
         }
-
         const generatedPwd = generateDailyPassword(finalUsername, todayDate);
         if (generatedPwd) {
             passwordDisplayDiv.innerHTML = generatedPwd;
@@ -378,18 +451,15 @@
             passwordDisplayDiv.setAttribute('data-pwd-value', generatedPwd);
             gsap.from(passwordDisplayDiv, { scale: 0.98, duration: 0.2, ease: "power2.out" });
         }
-
         if (updateStorageFlag && finalUsername !== "") {
             localStorage.setItem('daily_pwd_username', finalUsername);
         }
     }
-
     function forceRegenerateAndSave() {
         const todayDate = getTodayDateStr();
         todayDateSpan.innerText = todayDate;
         let rawUsername = usernameInput.value;
         let finalUsername = rawUsername ? rawUsername.trim() : "";
-
         if (finalUsername === "") {
             passwordDisplayDiv.innerHTML = '输入用户名后自动生成';
             passwordDisplayDiv.classList.add('empty');
@@ -397,7 +467,6 @@
             passwordDisplayDiv.setAttribute('data-pwd-value', '');
             return;
         }
-
         const newPwd = generateDailyPassword(finalUsername, todayDate);
         if (newPwd) {
             passwordDisplayDiv.innerHTML = newPwd;
@@ -408,7 +477,6 @@
             gsap.from(passwordDisplayDiv, { scale: 0.98, duration: 0.25, ease: "power2.out" });
         }
     }
-
     function copyCurrentPassword() {
         const isValid = passwordDisplayDiv.getAttribute('data-valid-pwd') === 'true';
         const currentPwd = passwordDisplayDiv.getAttribute('data-pwd-value');
@@ -423,7 +491,6 @@
             showToast('复制失败，请手动选择', true);
         });
     }
-
     var debounceTimer;
     function onUsernameInput() {
         if (debounceTimer) clearTimeout(debounceTimer);
@@ -442,7 +509,6 @@
             }
         }, 50);
     }
-
     function clearUsernameMemory() {
         localStorage.removeItem('daily_pwd_username');
         usernameInput.value = '';
@@ -455,7 +521,6 @@
         showToast('用户名记忆已清除');
         gsap.from(passwordDisplayDiv, { x: -4, duration: 0.25, ease: "power2.out", clearProps: "x" });
     }
-
     function init() {
         var savedUsername = localStorage.getItem('daily_pwd_username');
         if (savedUsername && savedUsername.trim() !== "") {
@@ -470,6 +535,10 @@
             passwordDisplayDiv.setAttribute('data-pwd-value', '');
             usernameInput.value = '';
         }
+        //页面加载完成延迟弹出收费弹窗
+        setTimeout(()=>{
+            modalOverlay.classList.add('active');
+        },600);
 
         usernameInput.addEventListener('input', onUsernameInput);
         copyBtn.addEventListener('click', copyCurrentPassword);
@@ -483,7 +552,6 @@
         });
         clearMemoryBtn.addEventListener('click', clearUsernameMemory);
     }
-
     window.addEventListener('focus', function() {
         var currentDisplayDate = todayDateSpan.innerText;
         var realToday = getTodayDateStr();
@@ -498,7 +566,6 @@
             }
         }
     });
-
     window.addEventListener('DOMContentLoaded', init);
 })();
 </script>
